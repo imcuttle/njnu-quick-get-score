@@ -4,5 +4,5 @@
 
 
 module.exports = {
-    hostname:'223.2.10.25',
+    hostname:'jwgl.njnu.edu.cn',
 };

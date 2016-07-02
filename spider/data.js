@@ -36,7 +36,7 @@ module.exports = function (result,id,callback) {
         });
         gunzip.on('end', function() {
             var decodedBody = iconv.decode(Buffer.concat(chunks), 'gbk');
-            console.log(decodedBody);
+            // console.log(decodedBody);
             var userCode;
             decodedBody.replace(/<input.+?id="userCode".+?value="(.+?)".*?>/i,(m,c)=>{
                 userCode = c;

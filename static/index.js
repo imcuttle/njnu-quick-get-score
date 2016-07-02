@@ -30,24 +30,25 @@
                 }else{
                     inputUser.disabled=inputPass.disabled=inputRand.disabled=btnSub.disabled=true;
                     code.outerHTML = '';
-                    btnLook.dataset['result']=data.result.match(/[\d]+?\.[\d]+?.[\d]+?.[\d]+/)[0];
+                    btnLook.dataset['result']=data.result.match(/(\w+?\.){2,}[\w]+/)[0];
                     btnLook.disabled = false;
+                    $.get(
+                        URL,
+                        {act:'lookup',result:btnLook.dataset['result']},
+                        function (data) {
+                            var ele = doc.createElement('div');
+                            ele.innerHTML = data;
+                            $(ele).find('table').attr('style','').addClass('table table-condensed')
+                                .find('td').attr('style','').attr('width','');
+                            report.innerHTML = ele.outerHTML;
+                        }
+                    )
                 }
             },'json'
         )
     });
     $('#btn-lookup').click(function () {
-        $.get(
-            URL,
-            {act:'lookup',result:this.dataset['result']},
-            function (data) {
-                var ele = doc.createElement('div');
-                ele.innerHTML = data;
-                $(ele).find('table').attr('style','').addClass('table table-condensed')
-                    .find('td').attr('style','').attr('width','');
-                report.innerHTML = ele.outerHTML;
-            }
-        )
+
     })
 
 

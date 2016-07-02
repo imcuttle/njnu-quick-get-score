@@ -26,6 +26,7 @@ http.createServer((req,res)=>{
         var arg = url.parse(req.url, true).query;
         if(arg.act=='login'){
             delete arg.act;
+            console.log(arg.username);
             login(arg,cookie['connect.id'],(st)=>{
                 st.pipe(res);
             });
