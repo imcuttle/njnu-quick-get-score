@@ -38,6 +38,7 @@ module.exports = function (result,id,callback) {
             var decodedBody = iconv.decode(Buffer.concat(chunks), 'gbk');
             // console.log(decodedBody);
             var userCode;
+            //dateFormat
             decodedBody.replace(/<input.+?id="userCode".+?value="(.+?)".*?>/i,(m,c)=>{
                 userCode = c;
             });
@@ -57,6 +58,11 @@ module.exports = function (result,id,callback) {
                         });
                         gunzip.on('end', function() {
                             var decodedBody = iconv.decode(Buffer.concat(chunks), 'gbk');
+                            console.log(new Date().Format("yyyy-MM-dd hh:mm:ss"));
+                            if(/<div style="float:left;text-align:left;width: 25%;">(.+?)<\/div>[\s\S]*?<div style="float:left;text-align:left;width: 30%">(.+?)<\/div>[\s\S]*?<div style="float:left;text-align:left;width: 15%;">(.+?)<\/div>[\s\S]*?<div style="float:left;text-align:left;width: 14%;">(.+?)<\/div>/i
+                                    .test(decodedBody)){
+                                console.log([RegExp.$1,RegExp.$2,RegExp.$3,RegExp.$4].join('  '));
+                            }
                             callback(null,decodedBody);
                         });
                     })
