@@ -9,10 +9,13 @@
     var code = document.getElementById('code');
     var btnLook = document.getElementById('btn-lookup');
     var report = document.getElementById('report');
-    var alert = document.getElementById('alert');
+    var alert = document.getElementsByName('alert')[0];
+    var alert2 = document.getElementsByName('alert')[1];
+    alert.innerText="稍等, 服务器正在识别验证码中...";
     $(code).click(function () {
+        alert.innerText="稍等, 服务器正在识别验证码中...";
         this.src = '/ranNumber?'+Date.now();
-    });
+    }).on('load',autoRecognize);
     $('#btn-submit').click(function () {
         //{isPasswordPolicy:1,}
         var btnSub = this;
@@ -24,7 +27,7 @@
                 password:hex_md5(hex_md5(pass)+hex_md5(inputRand.value.toLowerCase())),
                 isPasswordPolicy:isPasswordPolicy(user,pass)},
             function (data) {
-                alert.innerText=data.message;
+                alert2.innerText=data.message;
                 if(data.status!=200){
                     code.click();
                 }else{
@@ -50,7 +53,12 @@
     $('#btn-lookup').click(function () {
 
     })
-
+    function autoRecognize() {
+        $.get(URL,{act: 'recognize'},function (str) {
+            alert.innerText="上面为识别结果";
+            inputRand.value = str;
+        })
+    }
 
 }(document,window,jQuery);
 

@@ -11,6 +11,7 @@ var ranNum = require('./server/ranNumber');
 var u = require('./utils/index');
 var url = require('url');
 var md5 = require('./utils/md5');
+var recognize = require('./utils/javaProcess');
 
 http.createServer((req,res)=>{
     var cookie = u.parseCookie(req.headers.cookie);
@@ -20,7 +21,15 @@ http.createServer((req,res)=>{
     if(req.url.startsWith('/ranNumber')){
         var ops = u.extend(options,{path:'/cas/genValidateCode'});
         ranNum(cookie['connect.id'],(numres)=>{
-            numres.pipe(res);
+            var time = cookie['connect.id'],name = "VerifyCode/data/"+time+".jpeg";
+            var file = fs.createWriteStream(name);
+            numres.on('data',function (chs) {
+                file.write(chs);
+            });
+            numres.on('end',()=>{
+                file.end();
+            })
+            numres.pipe(res)
         })
     }else if(req.url.startsWith('/ajax')){
         var arg = url.parse(req.url, true).query;
@@ -30,7 +39,7 @@ http.createServer((req,res)=>{
             login(arg,cookie['connect.id'],(st)=>{
                 st.pipe(res);
             });
-        }else{
+        }else if(arg.act=='lookup'){
             delete arg.act;
             lookup(arg.result,cookie['connect.id'],(err,data)=>{
                 if(err) {
@@ -39,6 +48,11 @@ http.createServer((req,res)=>{
                 }
                 else
                     res.end(data);
+            })
+        }else if(arg.act=='recognize') {
+            delete arg.act;
+            recognize(cookie['connect.id']+".jpeg",(outstr,errstr)=>{
+                res.end(outstr);
             })
         }
     }else
@@ -54,4 +68,5 @@ http.createServer((req,res)=>{
         );
 }).listen(3010);
 
+console.info("http://localhost:3010");
 // login()
