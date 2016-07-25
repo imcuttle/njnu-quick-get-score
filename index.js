@@ -3,7 +3,8 @@
  */
 
 var http = require('http'),
-    fs = require('fs');
+    fs = require('fs'),
+    Transform = require('stream').Transform;
 var options = require('./spider/options');
 var login = require('./spider/login');
 var lookup = require('./spider/data');
@@ -11,8 +12,10 @@ var ranNum = require('./server/ranNumber');
 var u = require('./utils/index');
 var url = require('url');
 var md5 = require('./utils/md5');
-var recognize = require('./utils/javaProcess');
+var recognize = require('./server/javaServices');
 
+
+var sessions = {};
 http.createServer((req,res)=>{
     var cookie = u.parseCookie(req.headers.cookie);
     if(!cookie['connect.id']){
@@ -21,15 +24,18 @@ http.createServer((req,res)=>{
     if(req.url.startsWith('/ranNumber')){
         var ops = u.extend(options,{path:'/cas/genValidateCode'});
         ranNum(cookie['connect.id'],(numres)=>{
-            var time = cookie['connect.id'],name = "VerifyCode/data/"+time+".jpeg";
-            var file = fs.createWriteStream(name);
-            numres.on('data',function (chs) {
-                file.write(chs);
-            });
-            numres.on('end',()=>{
-                file.end();
-            })
-            numres.pipe(res)
+            var time = cookie['connect.id'];
+            //     name = "VerifyCode/data/"+time+".jpeg";
+            // var file = fs.createWriteStream(name);
+            // numres.on('data',function (chs) {
+            //     file.write(chs);
+            // });
+            // numres.on('end',()=>{
+            //     file.end();
+            // });
+            sessions[time] = [];
+            numres.on('data',(data)=>{sessions[time].push(data);});
+            numres.pipe(res);
         })
     }else if(req.url.startsWith('/ajax')){
         var arg = url.parse(req.url, true).query;
@@ -51,9 +57,13 @@ http.createServer((req,res)=>{
             })
         }else if(arg.act=='recognize') {
             delete arg.act;
-            recognize(cookie['connect.id']+".jpeg",(outstr,errstr)=>{
-                res.end(outstr);
-            })
+            var req = recognize((income)=>{
+                income.pipe(res);
+            });
+            req.end(Buffer.concat(sessions[cookie['connect.id']]));
+            // recognize(cookie['connect.id']+".jpeg",(outstr,errstr)=>{
+            //     res.end(outstr);
+            // })
         }
     }else
         fs.readFile(__dirname+'/static/'+(req.url==='/'?'index.html':req.url),
