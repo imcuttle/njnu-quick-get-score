@@ -11,7 +11,6 @@
     var report = document.getElementById('report');
     var alert = document.getElementsByName('alert')[0];
     var alert2 = document.getElementsByName('alert')[1];
-    alert.innerText="稍等, 服务器正在识别验证码中...";
     $(code).click(function () {
         alert.innerText="稍等, 服务器正在识别验证码中...";
         this.src = '/ranNumber?'+Date.now();
