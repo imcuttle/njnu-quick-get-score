@@ -1,7 +1,7 @@
 /**
  * Created by Yc on 2016/6/30.
  */
-var queryString = require('queryString');
+var queryString = require('querystring');
 var http = require('http');
 var u = require('../utils/index');
 var iconv = require('iconv-lite');
