@@ -2,7 +2,7 @@
  * Created by Moyu on 16/7/25.
  */
 var http = require("http");
-var queryString = require('queryString');
+var queryString = require('querystring');
 
 
 module.exports = function (cb) {
