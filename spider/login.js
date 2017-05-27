@@ -2,7 +2,7 @@
  * Created by Yc on 2016/6/30.
  */
 var options = require('./options');
-var queryString = require('queryString');
+var queryString = require('querystring');
 // var net = require('net');
 var http = require('http');
 var u = require('../utils/index');
